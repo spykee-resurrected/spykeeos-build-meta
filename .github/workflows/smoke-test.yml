@@ -1,0 +1,25 @@
+name: Smoke test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/determinate-nix-action@v3.23.2
+
+      - name: Check flake evaluates
+        run: nix flake check
+
+      - name: bst sanity check
+        run: nix develop --command bst --version
+
+      - name: Resolve project pipeline
+        run: nix develop --command bst show --deps all "**.bst"
